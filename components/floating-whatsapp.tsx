@@ -1,12 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { MessageCircle } from 'lucide-react'
+import { PhoneCall } from 'lucide-react'
 
 export default function FloatingWhatsApp() {
   return (
     <motion.a
-      href="https://wa.me/2340706378716"
+      href="tel:23407063787161"
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 right-6 z-40"
@@ -31,7 +31,7 @@ export default function FloatingWhatsApp() {
 
         {/* Main button */}
         <div className="relative bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all flex items-center justify-center w-16 h-16">
-          <MessageCircle className="w-7 h-7" />
+          <PhoneCall className="w-7 h-7" />
         </div>
       </div>
     </motion.a>
