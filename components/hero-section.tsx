@@ -1,18 +1,65 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Badge } from '@/components/ui/badge'
-// import { Sparkles } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from 'react'
+
+const WORDS = ['Workplace', 'Leadership', 'Framework']
+
+function TypewriterHeadline() {
+  const [displayed, setDisplayed] = useState<string[]>([])
+  const [currentWord, setCurrentWord] = useState(0)
+  const [currentChar, setCurrentChar] = useState(0)
+  const [done, setDone] = useState(false)
+
+  useEffect(() => {
+    if (done) return
+    if (currentWord >= WORDS.length) { setDone(true); return }
+
+    const word = WORDS[currentWord]
+    if (currentChar < word.length) {
+      const t = setTimeout(() => {
+        setCurrentChar(c => c + 1)
+      }, 60)
+      return () => clearTimeout(t)
+    } else {
+      const t = setTimeout(() => {
+        setDisplayed(d => [...d, word])
+        setCurrentWord(w => w + 1)
+        setCurrentChar(0)
+      }, 120)
+      return () => clearTimeout(t)
+    }
+  }, [currentWord, currentChar, done])
+
+  const typingWord = !done && currentWord < WORDS.length ? WORDS[currentWord].slice(0, currentChar) : null
+
+  return (
+    <h1 className="text-6xl lg:text-7xl font-800 text-white mb-8 leading-tight text-balance tracking-tight">
+      {displayed.map((word, i) => (
+        <span key={i} className={`block ${word === 'Leadership' ? 'text-[#7C4DFF]' : ''}`}>
+          {word}
+        </span>
+      ))}
+      {typingWord !== null && (
+        <span className={`block ${WORDS[currentWord] === 'Leadership' ? 'text-[#7C4DFF]' : ''}`}>
+          {typingWord}
+          <motion.span
+            animate={{ opacity: [1, 0] }}
+            transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse' }}
+            className="inline-block w-[3px] h-[0.85em] bg-[#7C4DFF] ml-1 align-middle rounded-sm"
+          />
+        </span>
+      )}
+    </h1>
+  )
+}
 
 export default function HeroSection() {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
-      },
+      transition: { staggerChildren: 0.15, delayChildren: 0.2 },
     },
   }
 
@@ -25,6 +72,7 @@ export default function HeroSection() {
     <section id="home" className="relative min-h-screen flex items-center justify-center pt-32 pb-16 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto w-full">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
+
           {/* Left Content */}
           <motion.div
             variants={containerVariants}
@@ -32,68 +80,73 @@ export default function HeroSection() {
             animate="visible"
             className="z-10"
           >
-            {/* <motion.div variants={itemVariants} className="mb-8">
-              <Badge className="bg-[#5E3BFF]/20 text-[#5E3BFF] border border-[#5E3BFF]/30 px-4 py-2 text-xs font-semibold tracking-wide">
-                <Sparkles className="w-3 h-3 inline mr-2" />
-                Limited Time Offer
-              </Badge>
-            </motion.div> */}
+            {/* Eyebrow label */}
+            <motion.div variants={itemVariants} className="mb-8">
+              {/* <span className="inline-flex items-center gap-2 bg-[#5E3BFF]/15 border border-[#5E3BFF]/25 text-[#a78fff] text-xs font-semibold tracking-widest uppercase px-4 py-2 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#7C4DFF] animate-pulse" />
+                3-Day Program · July 2026
+              </span> */}
+            </motion.div>
 
-            <motion.h1
-              variants={itemVariants}
-              className="text-6xl lg:text-7xl font-800 text-white mb-8 leading-tight text-balance tracking-tight"
-            >
-              Workplace
-              <br />
-              <span className="text-[#5E3BFF]">Leadership</span>
-              <br />
-              Framework
-            </motion.h1>
+            {/* Typewriter headline */}
+            <motion.div variants={itemVariants} >
+              <TypewriterHeadline />
+            </motion.div>
 
             <motion.p
               variants={itemVariants}
-              className="text-lg text-white/70 mb-10 leading-relaxed max-w-lg text-balance font-light"
+              className="text-lg text-white/60 mb-10 leading-relaxed max-w-lg font-light"
             >
-              Become the leader every workplace needs. Join Miracle Daniel for a transformative 3-day leadership development program designed for today 's workplace challenges.
+              Become the leader every workplace needs. Join Miracle Daniel for a
+              transformative 3-day leadership development program designed for
+              today's workplace challenges.
             </motion.p>
 
-            {/* Pricing Section */}
-            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-6 mb-10">
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/8 transition-all duration-300">
-                <p className="text-white/50 text-sm mb-3 font-medium">Early Bird</p>
-                <p className="text-3xl font-700 text-white">₦7,999</p>
-                <p className="text-white/40 text-xs mt-2">26th June - 5th July</p>
+            {/* Pricing */}
+            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4 mb-6">
+              <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300">
+                <p className="text-white/40 text-xs mb-3 font-medium uppercase tracking-wider">Early Bird</p>
+                <p className="text-3xl font-bold text-white">₦7,999</p>
+                <p className="text-white/30 text-xs mt-2">26 Jun – 5 Jul</p>
+                <div className="absolute top-3 right-3">
+                  <span className="bg-[#5E3BFF]/20 text-[#a78fff] text-[10px] font-semibold px-2 py-0.5 rounded-full border border-[#5E3BFF]/30">
+                    SAVE 73%
+                  </span>
+                </div>
               </div>
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/8 transition-all duration-300">
-                <p className="text-white/50 text-sm mb-3 font-medium">Regular</p>
-                <p className="text-3xl font-700 text-white">₦30,000</p>
-                <p className="text-white/40 text-xs mt-2">After Early Bird</p>
+              <div className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300">
+                <p className="text-white/40 text-xs mb-3 font-medium uppercase tracking-wider">Regular</p>
+                <p className="text-3xl font-bold text-white/60 line-through decoration-white/20">₦30,000</p>
+                <p className="text-white/30 text-xs mt-2">After Early Bird</p>
               </div>
             </motion.div>
 
-            {/* Course Start Date */}
+            {/* Class starts */}
             <motion.div
               variants={itemVariants}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-10 w-fit hover:bg-white/8 transition-all duration-300"
+              className="inline-flex items-center gap-4 bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-4 mb-10 hover:bg-white/[0.07] transition-all duration-300"
             >
-              <p className="text-white/50 text-sm mb-2 font-medium">Class Starts</p>
-              <p className="text-2xl font-700 text-white">15th July 2026</p>
+              <div className="w-10 h-10 rounded-xl bg-[#5E3BFF]/20 border border-[#5E3BFF]/30 flex items-center justify-center text-lg">
+                📅
+              </div>
+              <div>
+                <p className="text-white/40 text-xs font-medium uppercase tracking-wider mb-0.5">Class Starts</p>
+                <p className="text-xl font-bold text-white">15th July 2026</p>
+              </div>
             </motion.div>
 
-            {/* CTAs */}
-            <motion.div
-              variants={itemVariants}
-              className="flex flex-col sm:flex-row gap-4"
-            >
+            {/* CTA */}
+            <motion.div variants={itemVariants}>
               <motion.a
                 href="https://paystack.shop/pay/workplaceleadershipfw"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-4 rounded-xl bg-[#5E3BFF] text-white font-700 text-base transition-all duration-300 hover:shadow-2xl hover:shadow-[#5E3BFF]/30 hover:bg-[#7C4DFF] inline-block text-center"
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-[#5E3BFF] text-white font-bold text-base transition-all duration-300 hover:shadow-2xl hover:shadow-[#5E3BFF]/40 hover:bg-[#7C4DFF]"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
               >
                 Enroll Now
+                <span className="text-white/70">→</span>
               </motion.a>
             </motion.div>
           </motion.div>
@@ -105,10 +158,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            {/* Soft glow background */}
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#5E3BFF]/10 to-[#5E3BFF]/5 blur-3xl" />
-            
-            {/* Main Image */}
             <motion.div
               className="relative z-10"
               animate={{ y: [0, -15, 0] }}
@@ -121,6 +171,7 @@ export default function HeroSection() {
               />
             </motion.div>
           </motion.div>
+
         </div>
       </div>
     </section>
